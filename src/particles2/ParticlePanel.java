@@ -3,11 +3,12 @@ package particles2;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class ParticlePanel extends JPanel implements ActionListener {
@@ -18,14 +19,20 @@ public class ParticlePanel extends JPanel implements ActionListener {
 	private final double WALL_FRICTION = -0.96; //percent of velocity that remains after bouncing off a wall
 	private final double FORCE_STRENGTH = 13.9; //nerfs speed
 	private final double CLOSE_TOL = 10.0;	   //how close particles get before they are considered to have collided
+	private JButton start;
+	private JButton stop;
+	private JButton restart;
+	private boolean status = false;
+	private int numPart;
 
 	public ParticlePanel(int xDim, int yDim, int numPart) {
+		this.numPart = numPart;
         setBackground(Color.BLACK);
-		//addMouseListener(new MAdapter());
-		//addMouseMotionListener(new MAdapter());
+		addMouseListener(new MAdapter());
+		addMouseMotionListener(new MAdapter());
 		setFocusable(true);
 		setDoubleBuffered(true);
-
+		addbtns();
 		particles = new Particle[numPart];
 		timer = new Timer(1, this);
 		timer.start();
@@ -33,10 +40,53 @@ public class ParticlePanel extends JPanel implements ActionListener {
 		//initialize particles here
 		for (int i = 0; i < numPart; i++) {
 			Point2D.Double loc = new Point2D.Double(Math.random() * 600,Math.random() * 600);
-			double mag = Math.random() ;
+			double mag = Math.random();
 			particles[i] = new Particle(loc.x,loc.y,Math.random(),Math.random(),mag);
 			particles[i].activate(); //and lastly, activate them
 		}
+	}
+
+	public void addbtns(){
+		start = new JButton("Start");
+		start.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				status = true;
+			}
+		});
+
+		add(start);
+
+		stop = new JButton("Stop");
+		stop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				status = false;
+			}
+		});
+
+		add(stop);
+
+		restart = new JButton("Restart");
+		restart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				status = false;
+				for (int i = 0; i < numPart; i++) {
+					Point2D.Double loc = new Point2D.Double(Math.random() * 600,Math.random() * 600);
+					double mag = Math.random() ;
+					particles[i] = new Particle(loc.x,loc.y,Math.random(),Math.random(),mag);
+					particles[i].activate(); //and lastly, activate them
+				}
+
+
+			}
+		});
+
+		add(restart);
+
+
+
 	}
 	
     public void paintComponent(Graphics g)  	                 // draw graphics in the panel
@@ -169,8 +219,26 @@ public class ParticlePanel extends JPanel implements ActionListener {
     
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		updateVelocities();
-		updateParticles();
+		if(status){
+			updateVelocities();
+			updateParticles();
+		}
 		repaint();
+	}
+
+
+
+
+	private class MAdapter extends MouseAdapter{
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			System.out.println(e.getX());
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			super.mousePressed(e);
+		}
 	}
 }

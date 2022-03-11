@@ -1,7 +1,7 @@
 package particles2;
 
-import java.awt.EventQueue;
-import javax.swing.JFrame;
+import java.awt.*;
+import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class ParticleWrapper extends JFrame {
